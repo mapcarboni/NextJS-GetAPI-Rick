@@ -1,34 +1,22 @@
 .card {
-    border-radius: 15px;
+    width: 275px;
     background-color: white;
-    padding: 16px;
-    width: 220px;
+    padding: 1rem;
+    border-radius: 15px;
     text-align: center;
-    box-shadow: 0 4px 12px black;
-    transition: transform 0.2s, box-shadow 0.3s;
-    cursor: pointer;
-  }
+    transition: transform 0.25s;
+}
 
-    
-  .card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 20px black;
-  }
-  
-  .avatar {
+.card:hover {
+    transform: scale(1.1);
+}
+
+.avatar {
+    width: 125px;
     border-radius: 50%;
-    margin-bottom: 10px;
-    width: 100px;
-    height: auto;
-  }
-  
-  .title {
+}
+
+.title {
     margin: 10px 0 5px;
-    font-size: 18px;
-  }
-  
-  .info {
-    margin: 0;
-    color: gray;
-  }
-  
+    font-size: 20px;
+}
