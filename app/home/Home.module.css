@@ -29,7 +29,8 @@
 }
 
 .buttonSearch {
-  width: 100px;
+  width: 122px;
+  height: 40px;
   border-radius: 8px;
   background-color: lightgreen;
   color: white;
@@ -43,7 +44,7 @@
 }
 
 .buttonReset {
-  width: 100px;
+  width: 122px;
   border-radius: 8px;
   background-color: red;
   color: white;
