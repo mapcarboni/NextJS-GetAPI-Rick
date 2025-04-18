@@ -1,106 +1,145 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import CharacterCard from "../../components/CharacterCard";
 import styles from "./Home.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
-  const [search, setSearch] = useState("");
-  const [characters, setCharacters] = useState([]);
-  const [notFound, setNotFound] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+    // ---------------------------------------------
+    // 1️⃣ MOSTRAR TODOS OS PERSONAGENS
+    // ---------------------------------------------
 
-  const fetchCharacters = async (name, pageNumber) => {
-    try {
-      const { data } = await axios.get(
-        `https://rickandmortyapi.com/api/character/?page=${pageNumber}&name=${name}`
-      );
-      setCharacters(data.results);
-      setTotalPages(data.info.pages);
-      setNotFound(false);
-    } catch {
-      setCharacters([]);
-      setNotFound(true);
-    }
-  };
+    // Criar hooks para armazenar os personagens
+    // Criar hook para armazenar o estado encontrado personagens
+    const [characters, setCharacters] = useState([]);
+    const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => {
-    fetchCharacters(search.trim(), page);
-  }, [page]);
+    // Criar hook para armazenar o estado de loading
+    const [loading, setLoading] = useState(true);
 
-  const handleSearch = () => {
-    const name = search.trim();
-    setPage(1);
-    fetchCharacters(name, 1);
-  };
+    // Criar função para buscar os personagens da API com nome e página
+    // E se achar, armazenar no hook de personagens, armazenar total de páginas e setar o estado de não encontrado como false
+    //
+    // Se não achar, armazenar no hook de personagens como vazio e setar o estado de não encontrado como true
+    //
+    // E setar o estado de loading como false
+    const fetchCharacters = async (name = "", pageNumber = 1) => {
+        setLoading(true);
+        try {
+            const { data } = await axios.get(`https://rickandmortyapi.com/api/character/?page=${pageNumber}&name=${name}`);
+            setCharacters(data.results);
+            setTotalPages(data.info.pages);
+            setNotFound(false);
+        } catch {
+            setCharacters([]);
+            setNotFound(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleReset = () => {
-    setSearch("");
-    setPage(1);
-    fetchCharacters("", 1);
-    toast.success("Filtro foi resetado", { position: "top-left" });
-  };
+    // Chamar a função de buscar personagens quando o componente for montado
+    useEffect(() => {
+        fetchCharacters();
+    }, []);
 
-  const handleCardClick = (name) => {
-    toast.info(`Você clicou em ${name}`);
-  };
+    // ---------------------------------------------
+    // 2️⃣ FILTRAR POR NOME
+    // ---------------------------------------------
 
-  return (
-    <div className={styles.container}>
-      <ToastContainer position="top-right" autoClose={7500} theme="light" />
+    // Criar hook para armazenar o nome do personagem a ser buscado
+    const [search, setSearch] = useState("");
 
-      <h1 className={styles.title}>Personagens de Rick and Morty</h1>
+    // Criar função para buscar personagens com o nome
+    // E setar o estado de página como 1
+    // E chamar a função de buscar personagens com o nome e página 1
+    const handleSearch = () => {
+        setPage(1);
+        fetchCharacters(search, 1);
+    };
 
-      <div className={styles.controls}>
-        <input
-          type="text"
-          placeholder="Buscar por nome"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={styles.input}
-        />
-        <button onClick={handleSearch} className={styles.buttonSearch}>
-          Buscar
-        </button>
-        <button onClick={handleReset} className={styles.buttonReset}>
-          Resetar
-        </button>
-      </div>
+    // Criar função para resetar o filtro
+    // E limpar o campo de busca
+    // E setar o estado de página como 1
+    // E chamar a função de buscar personagens com o nome vazio
+    const handleReset = () => {
+        setSearch("");
+        setPage(1);
+        fetchCharacters("", 1);
+        toast.success("Filtro foi resetado", { position: "top-left" });
+    };
 
-      <div className={styles.navControls}>
-        <button
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-          disabled={page === 1}
-          className={styles.buttonNav}
-        >
-          Página Anterior
-        </button>
-        <button
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-          disabled={page === totalPages}
-          className={styles.buttonNav}
-        >
-          Próxima Página
-        </button>
-      </div>
+    // ---------------------------------------------
+    // 3️⃣ CLIQUE NO CARD E TOAST
+    // ---------------------------------------------
 
-      {notFound && (
-        <h1 className={styles.notFound}>Nenhum personagem encontrado 😢</h1>
-      )}
+    // Criar função para mostrar o nome do personagem no toast
+    const handleCardClick = (char) => {
+        toast.info(`Você clicou em ${char.name} que está ${char.status}`);
+    };
 
-      <div className={styles.grid}>
-        {characters.map((char) => (
-          <CharacterCard
-            key={char.id}
-            character={char}
-            onClick={() => handleCardClick(char.name)}
-          />
-        ))}
-      </div>
-    </div>
-  );
+    // ---------------------------------------------
+    // 4️⃣ PAGINAÇÃO
+    // ---------------------------------------------
+
+    // Criar hook para armazenar a página atual e o total de páginas
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    // usar o hook de efeito para buscar os personagens quando a página mudar
+    useEffect(() => {
+        fetchCharacters(search, page);
+    }, [page]);
+
+    // ---------------------------------------------
+    // 🧱 INTERFACE (RENDERIZAÇÃO)
+    // ---------------------------------------------
+
+    return (
+        <div className={styles.container}>
+            <ToastContainer position="top-right" autoClose={7500} theme="light" />
+
+            <h1 className={styles.title}>Personagens de Rick and Morty</h1>
+
+            {/* Área de busca */}
+            <div className={styles.controls}>
+                <input type="text" placeholder="Buscar por nome" value={search} onChange={(e) => setSearch(e.target.value)} className={styles.input} />
+                <button onClick={handleSearch} className={styles.buttonSearch}>
+                    Buscar
+                </button>
+                <button onClick={handleReset} className={styles.buttonReset}>
+                    Resetar
+                </button>
+            </div>
+
+            {/* Navegação de páginas */}
+            <div className={styles.navControls}>
+                <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1 || notFound} className={styles.buttonNav}>
+                    Página Anterior
+                </button>
+                <span className={styles.pageIndicator}>
+                    Página {page} de {totalPages}
+                </span>
+                <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages || notFound} className={styles.buttonNav}>
+                    Próxima Página
+                </button>
+            </div>
+
+            {/* Loading */}
+            {loading && <div className={styles.spinner}></div>}
+
+            {/* Mensagem de nenhum personagem encontrado */}
+            {notFound && <h1 className={styles.notFound}>Nenhum personagem encontrado 😢</h1>}
+
+            {/* Lista de personagens */}
+            <div className={styles.grid}>
+                {characters.map((char) => (
+                    <CharacterCard key={char.id} character={char} onClick={() => handleCardClick(char)} />
+                ))}
+            </div>
+        </div>
+    );
 }

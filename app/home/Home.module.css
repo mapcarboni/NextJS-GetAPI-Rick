@@ -99,6 +99,15 @@
   box-shadow: none;
 }
 
+.pageIndicator {
+  font-weight: bold;
+  font-size: 1.5rem;
+  background-color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
 .loading {
   text-align: center;
   color: #fff;
@@ -124,8 +133,10 @@
 .navControls {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1.5rem;
   margin: 2rem 0;
+  flex-wrap: wrap;
 }
 
 .pagination {
@@ -134,16 +145,17 @@
   margin: 2rem 0;
 }
 
-
 @media (max-width: 600px) {
   .input {
     width: 100%;
   }
+
   .buttonSearch,
   .buttonReset,
   .buttonNav {
     width: 100%;
   }
+
   .controls,
   .navControls {
     flex-direction: column;
