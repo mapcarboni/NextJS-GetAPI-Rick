@@ -1,11 +1,12 @@
 "use client";
 
+import styles from "./Home.module.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import CharacterCard from "../../components/CharacterCard";
-import styles from "./Home.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CharacterCard from "../../components/CharacterCard";
+import Loader from "../../components/Loader";
 
 export default function Home() {
     // ---------------------------------------------
@@ -120,26 +121,33 @@ export default function Home() {
                 <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1 || notFound} className={styles.buttonNav}>
                     Página Anterior
                 </button>
+
+                {/* Indicador de página */}
                 <span className={styles.pageIndicator}>
                     Página {page} de {totalPages}
                 </span>
+
                 <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages || notFound} className={styles.buttonNav}>
                     Próxima Página
                 </button>
             </div>
 
-            {/* Loading */}
-            {loading && <div className={styles.spinner}></div>}
-
             {/* Mensagem de nenhum personagem encontrado */}
             {notFound && <h1 className={styles.notFound}>Nenhum personagem encontrado 😢</h1>}
 
-            {/* Lista de personagens */}
-            <div className={styles.grid}>
-                {characters.map((char) => (
-                    <CharacterCard key={char.id} character={char} onClick={() => handleCardClick(char)} />
-                ))}
-            </div>
+            {/* Loader enquanto os personagens estão sendo carregados */}
+
+            {loading ? (
+                <div className={`${styles.loaderWrapper} ${loading ? "" : styles.hidden}`}>
+                    <Loader />
+                </div>
+            ) : (
+                <div className={styles.grid}>
+                    {characters.map((char) => (
+                        <CharacterCard key={char.id} character={char} onClick={() => handleCardClick(char)} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
